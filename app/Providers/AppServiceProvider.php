@@ -17,33 +17,28 @@ class AppServiceProvider extends ServiceProvider
 {
     /**
      * Bootstrap any application services.
-     *
-     * @return void
      */
     public function boot()
     {
-        //
     }
 
     /**
      * Register any application services.
-     *
-     * @return void
      */
     public function register()
     {
-
-        $this->app->bind(GamesRepository::class, function(Application $app) {
+        $this->app->bind(GamesRepository::class, function (Application $app) {
             return new GamesRepository();
         });
 
-        $this->app->bind(StreamsRepository::class, function(Application $app) {
+        $this->app->bind(StreamsRepository::class, function (Application $app) {
             return new StreamsRepository();
         });
 
         $this->app->bind(StreamPersister::class, function (Application $app) {
-           return new StreamPersister(
-               $app->get(StreamsRepository::class)
+            return new StreamPersister(
+               $app->get(StreamsRepository::class),
+               $app->get(LoggerInterface::class)
            );
         });
 

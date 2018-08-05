@@ -39,8 +39,9 @@ class TwitchRetriever extends RetrieversAbstract
 
     /**
      * TwitchRetriever constructor.
-     * @param Client $client
-     * @param array $config
+     *
+     * @param Client          $client
+     * @param array           $config
      * @param StreamPersister $persister
      * @param GamesRepository $gamesRepository
      * @param LoggerInterface $logger
@@ -51,8 +52,7 @@ class TwitchRetriever extends RetrieversAbstract
         StreamPersister $persister,
         GamesRepository $gamesRepository,
         LoggerInterface $logger
-    )
-    {
+    ) {
         $this->client = $client;
         $this->config = $config;
         $this->persister = $persister;
@@ -62,31 +62,34 @@ class TwitchRetriever extends RetrieversAbstract
 
     /**
      * @return bool
+     *
      * @throws \Exception
      */
     public function retrieve()
     {
         $games = $this->gamesRepository->all();
-        foreach($games as $game) {
+        foreach ($games as $game) {
             $streams = $this->getStreams($game);
-            if(!isset($streams['data'])) {
+            if (!isset($streams['data'])) {
                 continue;
             }
-            foreach($streams['data'] as $streamData) {
+            foreach ($streams['data'] as $streamData) {
                 $stream = $this->makeStreamDTO($streamData);
                 $this->persister->persist($stream, $game);
             }
         }
+
         return true;
     }
 
     /**
      * @param Game $game
+     *
      * @return string
      */
     private function getStreamsListUrl(Game $game): string
     {
-        return $this->config['url'] . 'streams?game_id='.$game->twitch_id;
+        return $this->config['url'].'streams?game_id='.$game->twitch_id;
     }
 
     /**
@@ -99,6 +102,7 @@ class TwitchRetriever extends RetrieversAbstract
 
     /**
      * @param Game $game
+     *
      * @return array|null
      */
     private function getStreams(Game $game): ?array
@@ -109,7 +113,12 @@ class TwitchRetriever extends RetrieversAbstract
                 $this->getHeaders()
             );
         } catch (\Exception $e) {
-            $this->logger->error(sprintf('Error while retrieving streams for game %s: $s', $game->title, $e->getMessage()));
+            $this->logger->error(
+                sprintf('Error while retrieving streams for game %s: %s',
+                    $game->title,
+                    $e->getMessage())
+            );
+
             return null;
         }
 

@@ -8,8 +8,6 @@ class CreateGamesTable extends Migration
 {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
     public function up()
     {
@@ -32,14 +30,12 @@ class CreateGamesTable extends Migration
             ['id' => '9', 'title' => 'Revelation', 'twitch_id' => '10539'],
             ['id' => '10', 'title' => 'Grand Theft Auto V', 'twitch_id' => '32982'],
             ['id' => '11', 'title' => 'FIFA 18', 'twitch_id' => '495589'],
-            ['id' => '12', 'title' => 'Sid Meier\'s Civilization VI', 'twitch_id' => '492553']
+            ['id' => '12', 'title' => 'Sid Meier\'s Civilization VI', 'twitch_id' => '492553'],
         ]);
     }
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
     public function down()
     {

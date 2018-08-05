@@ -28,6 +28,7 @@ class StreamsRetrieve extends Command
 
     /**
      * StreamsRetrieve constructor.
+     *
      * @param RetrieverInterface[] $retrievers
      */
     public function __construct(RetrieverInterface ...$retrievers)
@@ -41,7 +42,7 @@ class StreamsRetrieve extends Command
      */
     public function handle()
     {
-        foreach($this->retrievers as $retriever) {
+        foreach ($this->retrievers as $retriever) {
             $retriever->retrieve();
         }
     }

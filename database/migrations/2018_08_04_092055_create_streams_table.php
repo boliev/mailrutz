@@ -8,14 +8,12 @@ class CreateStreamsTable extends Migration
 {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
     public function up()
     {
         Schema::create('streams', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('game_id',false, true);
+            $table->integer('game_id', false, true);
             $table->string('title');
             $table->string('streamer_id');
             $table->string('stream_id');
@@ -25,13 +23,10 @@ class CreateStreamsTable extends Migration
             $table->foreign('game_id')->references('id')->on('games')->onDelete('cascade');
             $table->index(['stream_id']);
         });
-
     }
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
     public function down()
     {

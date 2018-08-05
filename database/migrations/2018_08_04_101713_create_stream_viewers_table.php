@@ -8,8 +8,6 @@ class CreateStreamViewersTable extends Migration
 {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
     public function up()
     {
@@ -20,14 +18,11 @@ class CreateStreamViewersTable extends Migration
             $table->dateTime('period_from');
             $table->dateTime('period_to');
             $table->foreign('stream_id')->references('id')->on('streams')->onDelete('cascade');
-
         });
     }
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
     public function down()
     {

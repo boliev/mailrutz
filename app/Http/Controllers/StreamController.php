@@ -14,7 +14,6 @@ class StreamController extends Controller
      */
     public function index()
     {
-        //
     }
 
     /**
@@ -24,62 +23,61 @@ class StreamController extends Controller
      */
     public function create()
     {
-        //
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
+     *
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
-        //
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Stream  $stream
+     * @param \App\Stream $stream
+     *
      * @return \Illuminate\Http\Response
      */
     public function show(Stream $stream)
     {
-        //
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Stream  $stream
+     * @param \App\Stream $stream
+     *
      * @return \Illuminate\Http\Response
      */
     public function edit(Stream $stream)
     {
-        //
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Stream  $stream
+     * @param \Illuminate\Http\Request $request
+     * @param \App\Stream              $stream
+     *
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, Stream $stream)
     {
-        //
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Stream  $stream
+     * @param \App\Stream $stream
+     *
      * @return \Illuminate\Http\Response
      */
     public function destroy(Stream $stream)
     {
-        //
     }
 }

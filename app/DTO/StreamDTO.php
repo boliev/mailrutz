@@ -53,9 +53,7 @@ class StreamDTO
         string $language,
         string $thumbnailUrl,
         string $serviceName
-
-    )
-    {
+    ) {
         $this->id = $id;
         $this->streamerId = $streamerId;
         $this->gameId = $gameId;

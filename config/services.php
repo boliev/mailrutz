@@ -1,7 +1,6 @@
 <?php
 
 return [
-
     /*
     |--------------------------------------------------------------------------
     | Third Party Services
@@ -38,6 +37,5 @@ return [
     'twitch' => [
         'url' => 'https://api.twitch.tv/helix/',
         'clientId' => env('TWITCH_CLIENT_ID'),
-    ]
-
+    ],
 ];
