@@ -69,13 +69,18 @@ class TwitchRetriever extends RetrieversAbstract
     {
         $games = $this->gamesRepository->all();
         foreach ($games as $game) {
+            $this->logger->info(sprintf('Start retrieving %s', $game->title));
             $streams = $this->getStreams($game);
             if (!isset($streams['data'])) {
                 continue;
             }
-            foreach ($streams['data'] as $streamData) {
-                $stream = $this->makeStreamDTO($streamData);
-                $this->persister->persist($stream, $game);
+
+            while (count($streams['data'])) {
+                foreach ($streams['data'] as $streamData) {
+                    $stream = $this->makeStreamDTO($streamData);
+                    $this->persister->persist($stream, $game);
+                }
+                $streams = $this->getNextPage($game, $streams['pagination']['cursor']);
             }
         }
 
@@ -83,13 +88,14 @@ class TwitchRetriever extends RetrieversAbstract
     }
 
     /**
-     * @param Game $game
+     * @param Game        $game
+     * @param null|string $cursor
      *
      * @return string
      */
-    private function getStreamsListUrl(Game $game): string
+    private function getStreamsListUrl(Game $game, ?string $cursor = null): string
     {
-        return $this->config['url'].'streams?game_id='.$game->twitch_id;
+        return $this->config['url'].'streams?game_id='.$game->twitch_id.($cursor ? '&after='.$cursor : '');
     }
 
     /**
@@ -101,15 +107,16 @@ class TwitchRetriever extends RetrieversAbstract
     }
 
     /**
-     * @param Game $game
+     * @param Game        $game
+     * @param string|null $cursor
      *
      * @return array|null
      */
-    private function getStreams(Game $game): ?array
+    private function getStreams(Game $game, ?string $cursor = null): ?array
     {
         try {
             $res = $this->client->get(
-                $this->getStreamsListUrl($game),
+                $this->getStreamsListUrl($game, $cursor),
                 $this->getHeaders()
             );
         } catch (\Exception $e) {
@@ -125,7 +132,23 @@ class TwitchRetriever extends RetrieversAbstract
         return json_decode($res->getBody()->getContents(), true);
     }
 
-    private function makeStreamDTO(array $streamData)
+    /**
+     * @param Game   $game
+     * @param string $cursor
+     *
+     * @return array|null
+     */
+    private function getNextPage(Game $game, string $cursor): ?array
+    {
+        return $this->getStreams($game, $cursor);
+    }
+
+    /**
+     * @param array $streamData
+     *
+     * @return StreamDTO
+     */
+    private function makeStreamDTO(array $streamData): StreamDTO
     {
         return new StreamDTO(
             $streamData['id'],
