@@ -6,7 +6,7 @@ use App\Http\Resources\Streams;
 use App\Repository\StreamsRepository;
 use Carbon\Carbon;
 
-class StreamController extends BaseController
+class StreamController extends Controller
 {
     const DELAY = 2;
 
