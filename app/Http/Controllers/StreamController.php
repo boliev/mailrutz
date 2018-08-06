@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\BadTimeFormatException;
 use App\Http\Resources\Streams;
 use App\Repository\StreamsRepository;
 use Carbon\Carbon;
+use Illuminate\Contracts\Pagination\Paginator;
 
 class StreamController extends Controller
 {
@@ -19,31 +21,61 @@ class StreamController extends Controller
      */
     public function index(StreamsRepository $streamsRepository)
     {
-        try {
-            $time = $this->extractTime(request()->get('time'));
-        } catch (\Exception $e) {
-            return $this->throwError('The time field must be in \'Y-m-d H:i:s\' format', 400);
-        }
+        $time = $this->extractTime(request()->get('time'));
         $games = request()->get('games', []);
+
         $streams = $streamsRepository->getActive($games, $time);
 
-        $collection = new Streams($streams);
-        $collection->appends(request()->except(['page']));
+        return $this->makePaginatedStreamCollection($streams);
+    }
 
-        return $collection;
+    /**
+     * @param StreamsRepository $streamsRepository
+     *
+     * @return mixed
+     *
+     * @throws \Exception
+     */
+    public function byGames(StreamsRepository $streamsRepository)
+    {
+        $time = $this->extractTime(request()->get('time'));
+        $games = request()->get('games', []);
+
+        $streams = $streamsRepository->getActiveGroupByGames($games, $time);
+
+        return $this->makePaginatedStreamCollection($streams);
     }
 
     /**
      * @param null|string $time
      *
      * @return Carbon
+     *
+     * @throws BadTimeFormatException
      */
     private function extractTime(?string $time = null): Carbon
     {
         if ($time) {
-            return Carbon::createFromFormat('Y-m-d H:i:s', $time);
+            try {
+                return Carbon::createFromFormat('Y-m-d H:i:s', $time);
+            } catch (\Exception $e) {
+                throw new BadTimeFormatException();
+            }
         } else {
             return Carbon::now()->subMinutes(self::DELAY);
         }
+    }
+
+    /**
+     * @param Paginator $streams
+     *
+     * @return Streams
+     */
+    private function makePaginatedStreamCollection(Paginator $streams): Streams
+    {
+        $collection = new Streams($streams);
+        $collection->appends(request()->except(['page']));
+
+        return $collection;
     }
 }

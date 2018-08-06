@@ -21,4 +21,5 @@ Route::get('/home', 'HomeController@index')->name('home');
 
 Route::group(['middleware' => 'whitelist:trusted'], function () {
     Route::get('/streams', 'StreamController@index')->name('getStreams')->middleware('auth:api');
+    Route::get('/streams/games', 'StreamController@byGames')->name('getStreamsByGames')->middleware('auth:api');
 });
