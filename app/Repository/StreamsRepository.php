@@ -43,7 +43,7 @@ class StreamsRepository
      */
     public function getActiveGroupByGames(array $games, Carbon $time): Paginator
     {
-        $results = Stream::selectRaw('count(id) AS viewers_count, game_id')->where('period_from', '<', $time)->where('period_to', '>', $time);
+        $results = Stream::selectRaw('sum(viewers_count) AS viewers_count, game_id')->where('period_from', '<', $time)->where('period_to', '>', $time);
         if (count($games)) {
             $results->whereIn('game_id', $games);
         }

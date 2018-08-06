@@ -44,10 +44,14 @@ class Handler extends ExceptionHandler
      * @param \Illuminate\Http\Request $request
      * @param \Exception               $exception
      *
-     * @return JsonResponse
+     * @return JsonResponse|\Illuminate\Http\Response
      */
     public function render($request, Exception $exception)
     {
-        return new JsonResponse(['message' => $exception->getMessage()], $exception->getCode());
+        if ($exception instanceof HTTPException) {
+            return new JsonResponse(['message' => $exception->getMessage()], $exception->getCode());
+        }
+
+        return parent::render($request, $exception);
     }
 }
