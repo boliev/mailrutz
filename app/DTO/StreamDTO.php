@@ -37,11 +37,6 @@ class StreamDTO
     /**
      * @var string
      */
-    private $thumbnailUrl;
-
-    /**
-     * @var string
-     */
     private $serviceName;
 
     public function __construct(
@@ -51,7 +46,6 @@ class StreamDTO
         string $title,
         int $viewerCount,
         string $language,
-        string $thumbnailUrl,
         string $serviceName
     ) {
         $this->id = $id;
@@ -60,7 +54,6 @@ class StreamDTO
         $this->title = $title;
         $this->viewerCount = $viewerCount;
         $this->language = $language;
-        $this->thumbnailUrl = $thumbnailUrl;
         $this->serviceName = $serviceName;
     }
 
@@ -110,14 +103,6 @@ class StreamDTO
     public function getLanguage(): string
     {
         return $this->language;
-    }
-
-    /**
-     * @return string
-     */
-    public function getThumbnailUrl(): string
-    {
-        return $this->thumbnailUrl;
     }
 
     /**

@@ -157,7 +157,6 @@ class TwitchRetriever extends RetrieversAbstract
             $streamData['title'],
             $streamData['viewer_count'],
             $streamData['language'],
-            $streamData['thumbnail_url'],
             Stream::SERVICE_NAME_TWITCH
         );
     }

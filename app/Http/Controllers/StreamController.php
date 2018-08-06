@@ -2,82 +2,48 @@
 
 namespace App\Http\Controllers;
 
-use App\Stream;
-use Illuminate\Http\Request;
+use App\Http\Resources\Streams;
+use App\Repository\StreamsRepository;
+use Carbon\Carbon;
 
-class StreamController extends Controller
+class StreamController extends BaseController
 {
+    const DELAY = 2;
+
     /**
-     * Display a listing of the resource.
+     * @param StreamsRepository $streamsRepository
      *
-     * @return \Illuminate\Http\Response
+     * @return mixed
+     *
+     * @throws \Exception
      */
-    public function index()
+    public function index(StreamsRepository $streamsRepository)
     {
+        try {
+            $time = $this->extractTime(request()->get('time'));
+        } catch (\Exception $e) {
+            return $this->throwError('The time field must be in \'Y-m-d H:i:s\' format', 400);
+        }
+        $games = request()->get('games', []);
+        $streams = $streamsRepository->getActive($games, $time);
+
+        $collection = new Streams($streams);
+        $collection->appends(request()->except(['page']));
+
+        return $collection;
     }
 
     /**
-     * Show the form for creating a new resource.
+     * @param null|string $time
      *
-     * @return \Illuminate\Http\Response
+     * @return Carbon
      */
-    public function create()
+    private function extractTime(?string $time = null): Carbon
     {
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param \Illuminate\Http\Request $request
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param \App\Stream $stream
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Stream $stream)
-    {
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param \App\Stream $stream
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Stream $stream)
-    {
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @param \App\Stream              $stream
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Stream $stream)
-    {
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param \App\Stream $stream
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Stream $stream)
-    {
+        if ($time) {
+            return Carbon::createFromFormat('Y-m-d H:i:s', $time);
+        } else {
+            return Carbon::now()->subMinutes(self::DELAY);
+        }
     }
 }

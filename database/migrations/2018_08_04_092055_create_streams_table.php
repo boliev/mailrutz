@@ -19,7 +19,9 @@ class CreateStreamsTable extends Migration
             $table->string('stream_id');
             $table->enum('service_name', ['twitch', 'youtube']);
             $table->string('language', 10)->nullable();
-            $table->string('thumbnail_url')->nullable();
+            $table->integer('viewers_count');
+            $table->dateTime('period_from');
+            $table->dateTime('period_to');
             $table->foreign('game_id')->references('id')->on('games')->onDelete('cascade');
             $table->index(['stream_id']);
         });

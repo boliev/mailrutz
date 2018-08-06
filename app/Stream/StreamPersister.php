@@ -6,7 +6,7 @@ use App\DTO\StreamDTO;
 use App\Game;
 use App\Repository\StreamsRepository;
 use App\Stream;
-use App\StreamViewers;
+use Carbon\Carbon;
 use Psr\Log\LoggerInterface;
 
 class StreamPersister
@@ -40,55 +40,24 @@ class StreamPersister
      */
     public function persist(StreamDTO $streamDto, Game $game)
     {
-        $stream = $this->streamRepository->getById($streamDto->getId(), $streamDto->getServiceName());
-        if (null === $stream) {
-            // new stream
-            $this->createStream($streamDto, $game);
-        } else {
-            // stream exists - update the viewers count
-            $this->updateStream($streamDto, $stream);
-        }
-    }
+        $now = Carbon::now();
+        $lastPeriod = $this->getLastPeriod($streamDto);
 
-    /**
-     * @param StreamDTO $streamDto
-     * @param Game      $game
-     */
-    private function createStream(StreamDTO $streamDto, Game $game): void
-    {
         $stream = new Stream();
-        /* TODO: pass game entitiy */
         $stream->game_id = $game->id;
         $stream->title = $streamDto->getTitle();
         $stream->service_name = $streamDto->getServiceName();
         $stream->streamer_id = $streamDto->getStreamerId();
         $stream->stream_id = $streamDto->getId();
         $stream->language = $streamDto->getLanguage();
-        $stream->thumbnail_url = $streamDto->getThumbnailUrl();
+        $stream->viewers_count = $streamDto->getViewerCount();
+        $stream->period_from = $lastPeriod;
+        $stream->period_to = $now;
         $stream->save();
         $this->logger->info(
             sprintf('New stream %s was created: %s',
-            $streamDto->getServiceName(),
-            $streamDto->getId())
-        );
-        $now = new \DateTime();
-        $this->createStreamViewers($streamDto, $stream, $now, $now);
-    }
-
-    /**
-     * @param StreamDTO $streamDto
-     * @param Stream    $stream
-     *
-     * @throws \Exception
-     */
-    private function updateStream(StreamDTO $streamDto, Stream $stream): void
-    {
-        $lastPeriod = $this->getLastPeriod($stream);
-        $this->createStreamViewers($streamDto, $stream, $lastPeriod, new \DateTime());
-        $this->logger->info(
-            sprintf('%s stream was updated: %s',
-            $streamDto->getServiceName(),
-            $streamDto->getId())
+                $streamDto->getServiceName(),
+                $streamDto->getId())
         );
     }
 
@@ -99,35 +68,13 @@ class StreamPersister
      *
      * @throws \Exception
      */
-    private function getLastPeriod(Stream $stream): \DateTime
+    private function getLastPeriod(StreamDTO $stream): \DateTime
     {
-        $lastCount = $stream->streamViewers()->get()->last();
+        $lastCount = $this->streamRepository->getById($stream->getId(), $stream->getServiceName());
         if ($lastCount) {
-            return (new \DateTime($lastCount->period_to))->add(new \DateInterval('PT1S'));
+            return Carbon::createFromFormat('Y-m-d H:i:s', $lastCount->period_to)->addSecond();
         } else {
-            $this->logger->warning(sprintf('Stream viewers not found for stream %d', $stream->id));
-
-            return new \DateTime();
+            return Carbon::now();
         }
-    }
-
-    /**
-     * @param StreamDTO $streamDto
-     * @param Stream    $stream
-     * @param \DateTime $periodFrom
-     * @param \DateTime $periodTo
-     */
-    private function createStreamViewers(
-        StreamDTO $streamDto,
-        Stream $stream,
-        \DateTime $periodFrom,
-        \DateTime $periodTo
-    ): void {
-        $streamViewers = new StreamViewers();
-        $streamViewers->stream_id = $stream->id;
-        $streamViewers->count = $streamDto->getViewerCount();
-        $streamViewers->period_from = $periodFrom;
-        $streamViewers->period_to = $periodTo;
-        $streamViewers->save();
     }
 }
