@@ -144,6 +144,7 @@ return [
         Illuminate\Translation\TranslationServiceProvider::class,
         Illuminate\Validation\ValidationServiceProvider::class,
         Illuminate\View\ViewServiceProvider::class,
+//        Skydiver\LaravelRouteBlocker\LaravelRouteBlockerServiceProvider::class,
 
         /*
          * Package Service Providers...
