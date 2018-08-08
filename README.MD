@@ -191,6 +191,6 @@ curl -X GET \
 - https://github.com/skydiver/laravel-route-blocker (Block routes by IP) 
 
 ## Что можно улучшить
-- Добавить кэширование SELECT'ов в Radis
+- Добавить кэширование SELECT'ов в Redis
 - Отдавать ошибки в очередь (сейчас только в лог)
 - CRUD для списка игр
